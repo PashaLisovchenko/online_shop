@@ -2,6 +2,7 @@ from django.shortcuts import redirect, get_object_or_404
 from django.views.generic.edit import FormMixin
 from .models import Category, Product
 from django.views.generic import ListView, DetailView
+from cart.forms import CartAddProductForm
 
 
 class ProductList(ListView):
@@ -40,3 +41,9 @@ class ProductDetail(DetailView):
     context_object_name = 'product'
     pk_url_kwarg = 'id'
     slug_url_kwarg = 'slug'
+
+    def get_context_data(self, **kwargs):
+        context = super(ProductDetail, self).get_context_data(**kwargs)
+        cart_product_form = CartAddProductForm()
+        context['cart_product_form'] = cart_product_form
+        return context
