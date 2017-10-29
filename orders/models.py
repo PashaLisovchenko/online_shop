@@ -19,9 +19,6 @@ class Order(models.Model):
     def __str__(self):
         return 'Order {}'.format(self.id)
 
-    def get_total_cost(self):
-        return sum(item.get_cost() for item in self.items.all())
-
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name='items')
@@ -31,6 +28,3 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return '{}'.format(self.id)
-
-    def get_cost(self):
-        return self.price * self.quantity

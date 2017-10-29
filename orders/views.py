@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from .models import OrderItem
 from .forms import OrderCreateForm
 from cart.models import Cart, get_total_price
@@ -33,4 +33,4 @@ class OrderCreate(FormMixin, ListView):
                                      price=item.product_price,
                                      quantity=item.quantity)
         cart.delete()
-        return render(None,'created.html', {'order': order})
+        return render(None, 'created.html', {'order': order})
