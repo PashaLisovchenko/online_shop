@@ -4,8 +4,11 @@ from .forms import OrderCreateForm
 from cart.models import Cart, get_total_price
 from django.views.generic import ListView
 from django.views.generic.edit import FormMixin
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
 
+@method_decorator(login_required, name='dispatch')
 class OrderCreate(FormMixin, ListView):
     model = Cart
     template_name = 'create.html'

@@ -1,11 +1,14 @@
 from django.shortcuts import redirect
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 from django.views.generic.edit import FormMixin
 from shop.models import Product
 from .models import Cart, get_total_price
 from .forms import CartAddProductForm
-from django.views.generic import UpdateView, DeleteView, ListView, CreateView
+from django.views.generic import DeleteView, ListView, CreateView
 
 
+@method_decorator(login_required, name='dispatch')
 class CartDetail(FormMixin, ListView):
     model = Cart
     form_class = CartAddProductForm
@@ -18,6 +21,7 @@ class CartDetail(FormMixin, ListView):
         return context
 
 
+@method_decorator(login_required, name='dispatch')
 class CartRemove(DeleteView):
     model = Cart
     template_name = 'delete_product.html'
@@ -25,6 +29,7 @@ class CartRemove(DeleteView):
     success_url = '/cart'
 
 
+@method_decorator(login_required, name='dispatch')
 class CardAdd(CreateView):
     model = Product
     form_class = CartAddProductForm

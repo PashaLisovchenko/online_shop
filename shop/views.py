@@ -1,10 +1,11 @@
-from django.shortcuts import redirect, get_object_or_404
-from django.views.generic.edit import FormMixin
 from .models import Category, Product
 from django.views.generic import ListView, DetailView
 from cart.forms import CartAddProductForm
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
 
+@method_decorator(login_required, name='dispatch')
 class ProductList(ListView):
     template_name = 'list.html'
     model = Product
@@ -20,6 +21,7 @@ class ProductList(ListView):
         return context
 
 
+@method_decorator(login_required, name='dispatch')
 class ProductListByCategory(DetailView):
     template_name = 'list.html'
     model = Category
@@ -35,6 +37,7 @@ class ProductListByCategory(DetailView):
         return context
 
 
+@method_decorator(login_required, name='dispatch')
 class ProductDetail(DetailView):
     template_name = 'detail.html'
     model = Product
