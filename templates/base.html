@@ -11,21 +11,35 @@
         <a href="/" class="logo">My shop</a>
     </div>
     <div id="subheader">
+    {% if request.user.is_authenticated %}
         <div class="cart">
-        {% if total_items > 0 %}
-        Your cart:
-        <a href="{% url "cart:cart_detail" %}">
-        {{ total_items }} item{{ total_items|pluralize }},
-        ${{ get_total_price }}
-        </a>
-        {% else %}
-        Your cart is empty.
-        {% endif %}
+            {% if total_items > 0 %}
+            Your cart:
+            <a href="{% url "cart:cart_detail" %}">
+            {{ total_items }} item{{ total_items|pluralize }},
+            ${{ get_total_price }}
+            </a>
+            {% else %}
+            Your cart is empty.
+            {% endif %}
         </div>
+    {% endif %}
+        <span class="user">
+            {% if request.user.is_authenticated %}
+            Hello {{ request.user.username}},
+            <a href="{% url "account:logout" %}">Logout</a>
+            {% else %}
+                <a href="{% url "account:login" %}">Log-in</a>
+                |
+                <a href="{% url "account:signup" %}">Sign-up</a>
+            {% endif %}
+        </span>
     </div>
+
     <div id="content">
         {% block content %}
         {% endblock %}
     </div>
+
 </body>
 </html>
