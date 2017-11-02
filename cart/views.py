@@ -44,13 +44,9 @@ class CardAdd(CreateView):
 
     def form_valid(self, form):
         self.object = self.get_object()
-        print(self.object)
-        cart = Cart.objects.all()
-        product_name = []
-        for c in cart:
-            product_name.append(c.products.name)
+        cart = Cart.objects.filter(products__name=self.object.name)
 
-        if self.object.name in product_name:
+        if cart.exists():
             cart = Cart.objects.get(products=self.object)
             cd = form.cleaned_data
             cart.quantity = cd['quantity'] + cart.quantity
