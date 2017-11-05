@@ -13,4 +13,7 @@ class Cart(models.Model):
 
 
 def get_total_price():
-    return sum(item.product_price for item in Cart.objects.all())
+    total = Cart.objects.annotate(total_sum=Sum('product_price'))
+    if total.first():
+        return total.first().total_sum
+    return 0
