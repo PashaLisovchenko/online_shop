@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models import Sum
+
 from shop.models import Product
 
 
@@ -13,7 +15,7 @@ class Cart(models.Model):
 
 
 def get_total_price():
-    total = Cart.objects.annotate(total_sum=Sum('product_price'))
-    if total.first():
-        return total.first().total_sum
+    total = Cart.objects.aggregate(total_sum=Sum('product_price'))
+    if total['total_sum']:
+        return total['total_sum']
     return 0

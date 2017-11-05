@@ -57,4 +57,3 @@ class CardAdd(CreateView):
             cd['products'] = self.object
             Cart.objects.create(**cd)
             return redirect('cart:cart_detail')
-

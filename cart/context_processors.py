@@ -1,11 +1,11 @@
 from .models import get_total_price, Cart
+from django.db.models import Sum
 
 
 def cart(request):
-    carts = Cart.objects.all()
-    q = []
-    for c in carts:
-        q.append(c.quantity)
-    total_items = sum(total for total in q)
-    return {'total_items': total_items,
-            'get_total_price': get_total_price,}
+    total_quantity = Cart.objects.aggregate(total_sum=Sum('quantity'))
+    if total_quantity['total_sum']:
+        return {'total_items': total_quantity['total_sum'],
+                'get_total_price': get_total_price}
+    return {'total_items': 0,
+            'get_total_price': get_total_price}
