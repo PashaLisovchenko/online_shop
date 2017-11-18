@@ -1,11 +1,28 @@
+from django.db.models import Sum
 from django.shortcuts import redirect
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.views.generic.edit import FormMixin
 from shop.models import Product
-from .models import Cart, get_total_price
+from .models import Cart
 from .forms import CartAddProductForm
-from django.views.generic import DeleteView, ListView, CreateView, UpdateView, DetailView
+from django.views.generic import DeleteView, ListView, CreateView, DetailView
+
+
+@login_required
+def get_total_price(request):
+    total = Cart.objects.filter(user=request.user).aggregate(total_sum=Sum('product_price'))
+    if total['total_sum']:
+        return total['total_sum']
+    return 0
+
+
+@login_required
+def get_total_item(request):
+    total_quantity = Cart.objects.filter(user=request.user).aggregate(total_sum=Sum('quantity'))
+    if total_quantity['total_sum']:
+        return total_quantity['total_sum']
+    return 0
 
 
 @method_decorator(login_required, name='dispatch')
@@ -15,9 +32,12 @@ class CartDetail(FormMixin, ListView):
     template_name = 'detail_card.html'
     context_object_name = 'cart'
 
+    def get_queryset(self):
+        return Cart.objects.filter(user=self.request.user)
+
     def get_context_data(self, **kwargs):
         context = super(CartDetail, self).get_context_data(**kwargs)
-        context['get_total_price'] = get_total_price
+        context['get_total_price'] = get_total_price(self.request)
         for item in context['cart']:
             item.quantity = CartAddProductForm(
                 initial={'quantity': item.quantity})
