@@ -5,7 +5,7 @@ from django.views.generic.edit import FormMixin
 from shop.models import Product
 from .models import Cart, get_total_price
 from .forms import CartAddProductForm
-from django.views.generic import DeleteView, ListView, CreateView
+from django.views.generic import DeleteView, ListView, CreateView, UpdateView, DetailView
 
 
 @method_decorator(login_required, name='dispatch')
@@ -18,6 +18,9 @@ class CartDetail(FormMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super(CartDetail, self).get_context_data(**kwargs)
         context['get_total_price'] = get_total_price
+        for item in context['cart']:
+            item.quantity = CartAddProductForm(
+                initial={'quantity': item.quantity})
         return context
 
 
@@ -57,3 +60,26 @@ class CardAdd(CreateView):
             cd['products'] = self.object
             Cart.objects.create(**cd)
             return redirect('cart:cart_detail')
+
+
+@method_decorator(login_required, name='dispatch')
+class CardUpdate(FormMixin, DetailView):
+    model = Cart
+    form_class = CartAddProductForm
+    pk_url_kwarg = 'cart_id'
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def form_valid(self, form):
+        self.object = self.get_object()
+        cart = Cart.objects.get(products=self.object.products)
+        cd = form.cleaned_data
+        cart.quantity = cd['quantity']
+        cart.save()
+        return redirect('cart:cart_detail')
+
